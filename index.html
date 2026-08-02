@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>恋愛の4フェーズ診断</title>
+
+  <style>
+    body {
+      margin: 0;
+      background: #f5f5f5;
+      color: #222;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Hiragino Kaku Gothic ProN",
+        "Yu Gothic",
+        sans-serif;
+    }
+
+    .container {
+      width: min(720px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 48px 0 80px;
+    }
+
+    h1 {
+      margin: 0 0 16px;
+      font-size: 32px;
+      line-height: 1.4;
+    }
+
+    .lead {
+      margin-bottom: 32px;
+      line-height: 1.8;
+      color: #555;
+    }
+
+    textarea {
+      box-sizing: border-box;
+      width: 100%;
+      min-height: 220px;
+      padding: 18px;
+      border: 1px solid #bbb;
+      border-radius: 10px;
+      background: #fff;
+      font: inherit;
+      font-size: 16px;
+      line-height: 1.7;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 16px;
+      padding: 16px;
+      border: 0;
+      border-radius: 10px;
+      background: #222;
+      color: #fff;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .result {
+      display: none;
+      margin-top: 32px;
+      padding: 24px;
+      border-radius: 10px;
+      background: #fff;
+      line-height: 1.8;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <h1>恋愛の4フェーズ診断</h1>
+
+    <p class="lead">
+      うまくいかなかった状況を、できるだけ具体的に書いてください。<br>
+      現在のフェーズと、詰まっている原因を構造的に診断します。
+    </p>
+
+    <textarea
+      id="question"
+      placeholder="例：2回目のデートまでは行けましたが、関係を進めようとすると断られました。何が原因でしょうか。"
+    ></textarea>
+
+    <button id="submitButton" type="button">
+      診断する
+    </button>
+
+    <section id="result" class="result"></section>
+  </main>
+
+  <script>
+    const submitButton = document.getElementById("submitButton");
+    const question = document.getElementById("question");
+    const result = document.getElementById("result");
+
+    submitButton.addEventListener("click", () => {
+      const text = question.value.trim();
+
+      if (!text) {
+        alert("相談内容を入力してください。");
+        return;
+      }
+
+      result.style.display = "block";
+      result.textContent =
+        "画面の作成に成功しました。次の工程でAI診断を接続します。";
+    });
+  </script>
+</body>
+</html>
