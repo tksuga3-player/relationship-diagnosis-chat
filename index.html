@@ -8,6 +8,8 @@
     content="width=device-width, initial-scale=1.0"
   >
 
+  <meta name="robots" content="index, follow">
+
   <title>恋愛の4フェーズ診断</title>
 
   <style>
@@ -25,6 +27,7 @@
       color: #202124;
       font-family:
         Arial,
+        "Noto Sans JP",
         "Hiragino Kaku Gothic ProN",
         "Yu Gothic",
         Meiryo,
@@ -36,19 +39,22 @@
       font-family: inherit;
     }
 
+    button {
+      -webkit-tap-highlight-color: transparent;
+    }
+
     .page {
       width: min(920px, calc(100% - 32px));
       margin: 0 auto;
       padding: 12vh 0 80px;
     }
 
+    /* ========================================
+       ヘッダー
+    ======================================== */
+
     .hero {
       text-align: center;
-      transition: padding 0.3s ease;
-    }
-
-    .hero.has-result {
-      padding-top: 0;
     }
 
     .title {
@@ -66,6 +72,10 @@
       line-height: 1.8;
     }
 
+    /* ========================================
+       Google検索風入力欄
+    ======================================== */
+
     .search-shell {
       position: relative;
       width: min(100%, 760px);
@@ -74,7 +84,7 @@
       border: 1px solid #dfe1e5;
       border-radius: 28px;
       box-shadow:
-        0 1px 6px rgba(32, 33, 36, 0.2);
+        0 1px 6px rgba(32, 33, 36, 0.20);
       transition:
         border-radius 0.25s ease,
         box-shadow 0.25s ease;
@@ -99,10 +109,15 @@
 
     .search-icon {
       flex: 0 0 auto;
-      margin-top: 10px;
+      width: 22px;
+      margin-top: 9px;
       color: #5f6368;
-      font-size: 21px;
-      line-height: 1;
+    }
+
+    .search-icon svg {
+      display: block;
+      width: 22px;
+      height: 22px;
     }
 
     #question {
@@ -111,14 +126,14 @@
       width: 100%;
       height: 42px;
       min-height: 42px;
-      max-height: 320px;
-      padding: 10px 4px 8px;
+      max-height: 340px;
+      padding: 9px 4px 8px;
       border: 0;
       outline: 0;
       background: transparent;
       color: #202124;
       font-size: 16px;
-      line-height: 1.7;
+      line-height: 1.75;
       resize: none;
       overflow-y: hidden;
       transition:
@@ -132,11 +147,14 @@
     }
 
     .search-shell.expanded #question {
-      min-height: 150px;
+      min-height: 170px;
     }
 
     .submit-button {
       flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       width: 44px;
       height: 44px;
       padding: 0;
@@ -144,7 +162,6 @@
       border-radius: 50%;
       background: #202124;
       color: #ffffff;
-      font-size: 20px;
       cursor: pointer;
       transition:
         opacity 0.2s ease,
@@ -163,12 +180,28 @@
       transform: none;
     }
 
+    .submit-button svg {
+      width: 21px;
+      height: 21px;
+    }
+
     .submit-label {
       margin-top: 14px;
       color: #80868b;
       font-size: 12px;
       line-height: 1.7;
     }
+
+    .privacy-note {
+      margin-top: 7px;
+      color: #9aa0a6;
+      font-size: 11px;
+      line-height: 1.7;
+    }
+
+    /* ========================================
+       診断中
+    ======================================== */
 
     .loading {
       display: none;
@@ -200,12 +233,13 @@
     }
 
     .loading-dots span:nth-child(3) {
-      animation-delay: 0.3s;
+      animation-delay: 0.30s;
     }
 
     .loading-text {
       color: #5f6368;
       font-size: 14px;
+      line-height: 1.7;
     }
 
     @keyframes pulse {
@@ -222,6 +256,10 @@
       }
     }
 
+    /* ========================================
+       結果全体
+    ======================================== */
+
     .result-area {
       display: none;
       width: min(100%, 820px);
@@ -232,18 +270,48 @@
       display: block;
     }
 
+    .complete-message {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding: 15px 18px;
+      border-radius: 14px;
+      background: #e6f4ea;
+      color: #137333;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .complete-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 23px;
+      height: 23px;
+      border-radius: 50%;
+      background: #137333;
+      color: #ffffff;
+      font-size: 14px;
+    }
+
+    /* ========================================
+       フェーズ図
+    ======================================== */
+
     .phase-card {
-      padding: 26px;
-      border: 1px solid #e0e0e0;
-      border-radius: 20px;
+      padding: 25px 24px 27px;
+      border: 1px solid #d7e2ec;
+      border-radius: 18px;
       background: #ffffff;
       box-shadow:
         0 2px 12px rgba(60, 64, 67, 0.08);
     }
 
     .phase-title {
-      margin: 0 0 22px;
-      font-size: 18px;
+      margin: 0 0 20px;
+      color: #202124;
+      font-size: 17px;
       font-weight: 700;
     }
 
@@ -251,42 +319,59 @@
       display: grid;
       grid-template-columns:
         minmax(0, 1fr)
-        24px
+        22px
         minmax(0, 1fr)
-        24px
+        22px
         minmax(0, 1fr)
-        24px
+        22px
         minmax(0, 1fr);
-      align-items: center;
+      align-items: start;
       gap: 4px;
     }
 
     .phase-item {
       position: relative;
-      min-height: 94px;
-      padding: 14px 9px;
-      border: 1px solid #dadce0;
-      border-radius: 13px;
-      background: #f8f9fa;
+      min-width: 0;
       text-align: center;
     }
 
-    .phase-item.active {
-      border: 2px solid #202124;
-      background: #ffffff;
-      box-shadow:
-        0 2px 8px rgba(32, 33, 36, 0.14);
+    .phase-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 78px;
+      padding: 12px 7px;
+      border: 1px solid #dadce0;
+      border-radius: 12px;
+      background: #f8f9fa;
+      color: #5f6368;
+      transition:
+        background 0.25s ease,
+        color 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
     }
 
-    .phase-item.passed {
-      background: #f1f3f4;
+    .phase-item.passed .phase-box {
+      border-color: #b7d3ef;
+      background: #e5f1ff;
+      color: #185b94;
+    }
+
+    .phase-item.active .phase-box {
+      border-color: #1a73e8;
+      background: #1a73e8;
+      color: #ffffff;
+      box-shadow:
+        0 3px 10px rgba(26, 115, 232, 0.25);
     }
 
     .phase-number {
-      margin-bottom: 7px;
-      font-size: 12px;
-      color: #5f6368;
+      margin-bottom: 6px;
+      font-size: 11px;
+      line-height: 1.2;
       font-weight: 700;
+      letter-spacing: 0.04em;
     }
 
     .phase-name {
@@ -295,83 +380,108 @@
       font-weight: 700;
     }
 
-    .phase-status {
-      display: none;
-      position: absolute;
-      left: 50%;
-      bottom: -28px;
-      width: max-content;
-      transform: translateX(-50%);
-      color: #202124;
-      font-size: 12px;
-      font-weight: 700;
+    .phase-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 78px;
+      color: #aab0b6;
+      font-size: 21px;
     }
 
-    .phase-item.active .phase-status {
+    /* ========================================
+       現在フェーズ内の進捗
+    ======================================== */
+
+    .phase-progress {
+      display: none;
+      margin-top: 17px;
+    }
+
+    .phase-item.active .phase-progress {
       display: block;
     }
 
-    .phase-arrow {
-      color: #9aa0a6;
-      text-align: center;
-      font-size: 20px;
-    }
-
-    .progress-section {
-      margin-top: 46px;
-    }
-
-    .progress-heading {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 16px;
-      margin-bottom: 9px;
-    }
-
-    .progress-label {
-      color: #5f6368;
-      font-size: 13px;
-    }
-
-    .progress-value {
-      font-size: 17px;
-      font-weight: 700;
-    }
-
-    .progress-track {
-      width: 100%;
-      height: 11px;
-      overflow: hidden;
+    .phase-progress-track {
+      position: relative;
+      height: 6px;
+      margin: 0 7px;
       border-radius: 999px;
-      background: #e8eaed;
+      background: #dfe5eb;
     }
 
-    .progress-bar {
-      width: 0;
+    .phase-progress-completed {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 50%;
       height: 100%;
       border-radius: inherit;
-      background: #202124;
+      background: #1a73e8;
       transition: width 0.7s ease;
     }
+
+    .phase-progress-marker {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 15px;
+      height: 15px;
+      border: 3px solid #ffffff;
+      border-radius: 50%;
+      background: #e04444;
+      box-shadow:
+        0 1px 4px rgba(0, 0, 0, 0.24);
+      transform: translate(-50%, -50%);
+      transition: left 0.7s ease;
+    }
+
+    .phase-progress-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      color: #7a8793;
+      font-size: 10px;
+      line-height: 1;
+    }
+
+    .phase-current-label {
+      margin-top: 11px;
+      color: #c93434;
+      font-size: 12px;
+      line-height: 1.45;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .phase-current-label-detail {
+      color: #596b7a;
+      font-weight: 500;
+    }
+
+    /* ========================================
+       回答本文
+    ======================================== */
 
     .answer-card {
       margin-top: 20px;
       padding: 30px;
-      border: 1px solid #e0e0e0;
-      border-radius: 20px;
-      background: #ffffff;
+      border: 1px solid #dce5ee;
+      border-radius: 18px;
+      background: #eef6ff;
+      color: #174f85;
       box-shadow:
-        0 2px 12px rgba(60, 64, 67, 0.08);
+        0 2px 12px rgba(60, 64, 67, 0.07);
       text-align: left;
       font-size: 16px;
-      line-height: 1.9;
+      line-height: 1.85;
       overflow-wrap: anywhere;
     }
 
     .answer-card h2 {
-      margin: 30px 0 6px;
-      font-size: 19px;
+      margin: 28px 0 4px;
+      color: #0b4f8a;
+      font-size: 18px;
       line-height: 1.55;
     }
 
@@ -380,11 +490,15 @@
     }
 
     .answer-card p {
-      margin: 0 0 9px;
+      margin: 0;
+    }
+
+    .answer-card .answer-gap {
+      height: 15px;
     }
 
     .answer-card a {
-      color: #1a73e8;
+      color: #0055a5;
       text-decoration: underline;
       text-underline-offset: 3px;
     }
@@ -403,6 +517,10 @@
       text-align: center;
     }
 
+    /* ========================================
+       スマホ
+    ======================================== */
+
     @media (max-width: 700px) {
       .page {
         width: min(100% - 20px, 920px);
@@ -417,38 +535,48 @@
         padding-left: 14px;
       }
 
+      .search-shell.expanded #question {
+        min-height: 190px;
+      }
+
       .phase-card {
-        padding: 20px 14px;
+        padding: 20px 13px 24px;
       }
 
       .phase-flow {
         display: flex;
-        align-items: stretch;
+        align-items: flex-start;
         overflow-x: auto;
         gap: 7px;
-        padding: 0 2px 34px;
+        padding: 0 2px 12px;
+        scroll-snap-type: x proximity;
       }
 
       .phase-item {
-        flex: 0 0 125px;
+        flex: 0 0 138px;
+        scroll-snap-align: center;
       }
 
       .phase-arrow {
-        display: flex;
-        align-items: center;
-        flex: 0 0 auto;
+        flex: 0 0 20px;
+      }
+
+      .phase-progress-labels {
+        font-size: 9px;
       }
 
       .answer-card {
         padding: 22px 18px;
+        font-size: 15px;
       }
     }
   </style>
 </head>
 
-<body>
+<body translate="no" class="notranslate">
   <main class="page">
-    <section id="hero" class="hero">
+
+    <section class="hero">
       <h1 class="title">恋愛の4フェーズ診断</h1>
 
       <p class="subtitle">
@@ -458,7 +586,19 @@
 
       <div id="searchShell" class="search-shell">
         <div class="search-row">
-          <div class="search-icon" aria-hidden="true">⌕</div>
+
+          <div class="search-icon" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            >
+              <circle cx="11" cy="11" r="7"></circle>
+              <path d="M20 20L16.2 16.2"></path>
+            </svg>
+          </div>
 
           <textarea
             id="question"
@@ -473,14 +613,31 @@
             aria-label="診断する"
             title="診断する"
           >
-            ↑
+            <svg
+              id="submitIcon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M12 19V5"></path>
+              <path d="M6.5 10.5L12 5L17.5 10.5"></path>
+            </svg>
+
+            <span id="submitLoadingIcon" style="display:none;">
+              …
+            </span>
           </button>
+
         </div>
       </div>
 
       <div class="submit-label">
-        状況・相手の反応・自分が取った行動を書くと、判定精度が上がります
+        相手との関係・具体的な出来事・自分の行動を書くと、判定精度が上がります
       </div>
+
     </section>
 
     <section id="loading" class="loading">
@@ -491,59 +648,135 @@
       </div>
 
       <div class="loading-text">
-        4つのフェーズから現在地を判定しています
+        深い推論を入れているので、10〜20秒ほどかかる場合があります
       </div>
     </section>
 
     <section id="resultArea" class="result-area">
-      <div id="phaseCard" class="phase-card">
-        <h2 class="phase-title">現在地</h2>
+
+      <div class="complete-message">
+        <span class="complete-icon">✓</span>
+        <span>分析が完了しました。</span>
+      </div>
+
+      <section id="phaseCard" class="phase-card">
+        <h2 class="phase-title">
+          恋愛4フェーズ上の現在地
+        </h2>
 
         <div class="phase-flow">
+
           <div class="phase-item" data-phase="1">
-            <div class="phase-number">PHASE 1</div>
-            <div class="phase-name">拒絶ライン</div>
-            <div class="phase-status">▲ ここで詰まり</div>
+            <div class="phase-box">
+              <div>
+                <div class="phase-number">フェーズ1</div>
+                <div class="phase-name">拒絶ライン</div>
+              </div>
+            </div>
+
+            <div class="phase-progress">
+              <div class="phase-progress-track">
+                <div class="phase-progress-completed"></div>
+                <div class="phase-progress-marker"></div>
+              </div>
+
+              <div class="phase-progress-labels">
+                <span>前半</span>
+                <span>中盤</span>
+                <span>後半</span>
+              </div>
+
+              <div class="phase-current-label"></div>
+            </div>
           </div>
 
           <div class="phase-arrow">→</div>
 
           <div class="phase-item" data-phase="2">
-            <div class="phase-number">PHASE 2</div>
-            <div class="phase-name">安全ライン</div>
-            <div class="phase-status">▲ ここで詰まり</div>
+            <div class="phase-box">
+              <div>
+                <div class="phase-number">フェーズ2</div>
+                <div class="phase-name">安全ライン</div>
+              </div>
+            </div>
+
+            <div class="phase-progress">
+              <div class="phase-progress-track">
+                <div class="phase-progress-completed"></div>
+                <div class="phase-progress-marker"></div>
+              </div>
+
+              <div class="phase-progress-labels">
+                <span>前半</span>
+                <span>中盤</span>
+                <span>後半</span>
+              </div>
+
+              <div class="phase-current-label"></div>
+            </div>
           </div>
 
           <div class="phase-arrow">→</div>
 
           <div class="phase-item" data-phase="3">
-            <div class="phase-number">PHASE 3</div>
-            <div class="phase-name">男としての<br>候補ライン</div>
-            <div class="phase-status">▲ ここで詰まり</div>
+            <div class="phase-box">
+              <div>
+                <div class="phase-number">フェーズ3</div>
+                <div class="phase-name">
+                  男としての<br>候補ライン
+                </div>
+              </div>
+            </div>
+
+            <div class="phase-progress">
+              <div class="phase-progress-track">
+                <div class="phase-progress-completed"></div>
+                <div class="phase-progress-marker"></div>
+              </div>
+
+              <div class="phase-progress-labels">
+                <span>前半</span>
+                <span>中盤</span>
+                <span>後半</span>
+              </div>
+
+              <div class="phase-current-label"></div>
+            </div>
           </div>
 
           <div class="phase-arrow">→</div>
 
           <div class="phase-item" data-phase="4">
-            <div class="phase-number">PHASE 4</div>
-            <div class="phase-name">長期伴侶<br>ライン</div>
-            <div class="phase-status">▲ ここで詰まり</div>
-          </div>
-        </div>
+            <div class="phase-box">
+              <div>
+                <div class="phase-number">フェーズ4</div>
+                <div class="phase-name">
+                  長期伴侶<br>ライン
+                </div>
+              </div>
+            </div>
 
-        <div class="progress-section">
-          <div class="progress-heading">
-            <span class="progress-label">このフェーズ内での進捗</span>
-            <span id="progressValue" class="progress-value">0%</span>
+            <div class="phase-progress">
+              <div class="phase-progress-track">
+                <div class="phase-progress-completed"></div>
+                <div class="phase-progress-marker"></div>
+              </div>
+
+              <div class="phase-progress-labels">
+                <span>前半</span>
+                <span>中盤</span>
+                <span>後半</span>
+              </div>
+
+              <div class="phase-current-label"></div>
+            </div>
           </div>
 
-          <div class="progress-track">
-            <div id="progressBar" class="progress-bar"></div>
-          </div>
         </div>
-      </div>
+      </section>
 
       <article id="answerCard" class="answer-card"></article>
+
     </section>
   </main>
 
@@ -551,20 +784,38 @@
     const API_URL =
       "https://relationship-diagnosis-api.tk-suga3.workers.dev/";
 
-    const hero = document.getElementById("hero");
-    const searchShell = document.getElementById("searchShell");
-    const question = document.getElementById("question");
-    const submitButton = document.getElementById("submitButton");
+    const searchShell =
+      document.getElementById("searchShell");
 
-    const loading = document.getElementById("loading");
-    const resultArea = document.getElementById("resultArea");
-    const phaseCard = document.getElementById("phaseCard");
-    const answerCard = document.getElementById("answerCard");
+    const question =
+      document.getElementById("question");
 
-    const progressValue = document.getElementById("progressValue");
-    const progressBar = document.getElementById("progressBar");
+    const submitButton =
+      document.getElementById("submitButton");
+
+    const submitIcon =
+      document.getElementById("submitIcon");
+
+    const submitLoadingIcon =
+      document.getElementById("submitLoadingIcon");
+
+    const loading =
+      document.getElementById("loading");
+
+    const resultArea =
+      document.getElementById("resultArea");
+
+    const phaseCard =
+      document.getElementById("phaseCard");
+
+    const answerCard =
+      document.getElementById("answerCard");
 
     let isSubmitting = false;
+
+    /* ========================================
+       入力欄
+    ======================================== */
 
     function expandSearch() {
       searchShell.classList.add("expanded");
@@ -575,6 +826,7 @@
       if (!question.value.trim()) {
         searchShell.classList.remove("expanded");
         question.style.height = "42px";
+        question.style.overflowY = "hidden";
       }
     }
 
@@ -582,43 +834,107 @@
       question.style.height = "auto";
 
       const minimumHeight =
-        searchShell.classList.contains("expanded") ? 150 : 42;
+        searchShell.classList.contains("expanded")
+          ? 170
+          : 42;
 
       const nextHeight = Math.max(
         minimumHeight,
-        Math.min(question.scrollHeight, 320)
+        Math.min(question.scrollHeight, 340)
       );
 
       question.style.height = `${nextHeight}px`;
+
       question.style.overflowY =
-        question.scrollHeight > 320 ? "auto" : "hidden";
+        question.scrollHeight > 340
+          ? "auto"
+          : "hidden";
     }
+
+    /* ========================================
+       診断中
+    ======================================== */
 
     function setLoading(active) {
       isSubmitting = active;
+
       submitButton.disabled = active;
-      submitButton.textContent = active ? "…" : "↑";
-      loading.classList.toggle("visible", active);
+
+      submitIcon.style.display =
+        active ? "none" : "block";
+
+      submitLoadingIcon.style.display =
+        active ? "inline" : "none";
+
+      loading.classList.toggle(
+        "visible",
+        active
+      );
     }
 
+    /* ========================================
+       Difyの機械判定行を取得・削除
+    ======================================== */
+
     function extractMachineValues(rawText) {
-      const phaseMatch = rawText.match(
+      const normalizedText = String(rawText || "")
+        .replace(/\r\n/g, "\n")
+        .replace(/\r/g, "\n")
+        .replace(/\u2028/g, "\n")
+        .replace(/\u2029/g, "\n")
+        .replace(/\u0085/g, "\n");
+
+      const phaseMatch = normalizedText.match(
         /\[\[\s*CURRENT_PHASE\s*:\s*([1-4])\s*\]\]/i
       );
 
-      const progressMatch = rawText.match(
+      const progressMatch = normalizedText.match(
         /\[\[\s*PHASE_PROGRESS\s*:\s*(\d{1,3})\s*\]\]/i
       );
 
-      const phase = phaseMatch
+      let phase = phaseMatch
         ? Number(phaseMatch[1])
         : null;
 
-      const progress = progressMatch
-        ? Math.max(0, Math.min(99, Number(progressMatch[1])))
-        : 0;
+      let progress = progressMatch
+        ? Number(progressMatch[1])
+        : null;
 
-      const cleanText = rawText
+      if (progress !== null) {
+        progress = Math.max(
+          0,
+          Math.min(99, progress)
+        );
+      }
+
+      /*
+        PHASE_PROGRESSがない場合は、
+        現在フェーズ内の中盤として扱う
+      */
+      if (phase !== null && progress === null) {
+        progress = 50;
+      }
+
+      /*
+        CURRENT_PHASEがない場合は、
+        本文の「現在地：フェーズ3」などから補完
+      */
+      if (phase === null) {
+        const visiblePhaseMatch =
+          normalizedText.match(
+            /現在地[：:]\s*フェーズ\s*([1-4])/i
+          ) ||
+          normalizedText.match(
+            /現在のフェーズ[：:]\s*フェーズ\s*([1-4])/i
+          );
+
+        if (visiblePhaseMatch) {
+          phase = Number(visiblePhaseMatch[1]);
+          progress = 50;
+        }
+      }
+
+      const cleanText = normalizedText
         .replace(
           /\[\[\s*CURRENT_PHASE\s*:\s*[1-4]\s*\]\]/gi,
           ""
@@ -627,7 +943,6 @@
           /\[\[\s*PHASE_PROGRESS\s*:\s*\d{1,3}\s*\]\]/gi,
           ""
         )
-        .replace(/^\s+/, "")
         .trim();
 
       return {
@@ -637,14 +952,34 @@
       };
     }
 
+    /* ========================================
+       フェーズ図
+    ======================================== */
+
+    function getProgressLabel(progress) {
+      if (progress <= 30) {
+        return "前半";
+      }
+
+      if (progress <= 70) {
+        return "中盤";
+      }
+
+      return "後半";
+    }
+
     function updatePhaseDisplay(phase, progress) {
       const phaseItems =
         document.querySelectorAll(".phase-item");
 
       phaseItems.forEach((item) => {
-        const itemPhase = Number(item.dataset.phase);
+        item.classList.remove(
+          "active",
+          "passed"
+        );
 
-        item.classList.remove("active", "passed");
+        const itemPhase =
+          Number(item.dataset.phase);
 
         if (phase && itemPhase < phase) {
           item.classList.add("passed");
@@ -653,22 +988,129 @@
         if (itemPhase === phase) {
           item.classList.add("active");
         }
+
+        const completed =
+          item.querySelector(
+            ".phase-progress-completed"
+          );
+
+        const marker =
+          item.querySelector(
+            ".phase-progress-marker"
+          );
+
+        const label =
+          item.querySelector(
+            ".phase-current-label"
+          );
+
+        if (completed) {
+          completed.style.width = "0%";
+        }
+
+        if (marker) {
+          marker.style.left = "0%";
+        }
+
+        if (label) {
+          label.innerHTML = "";
+        }
       });
 
-      progressValue.textContent = `${progress}%`;
+      if (![1, 2, 3, 4].includes(phase)) {
+        phaseCard.style.display = "none";
+        return;
+      }
+
+      phaseCard.style.display = "block";
+
+      const safeProgress = Math.max(
+        0,
+        Math.min(
+          99,
+          progress === null ||
+          progress === undefined
+            ? 50
+            : Number(progress)
+        )
+      );
+
+      const progressLabel =
+        getProgressLabel(safeProgress);
+
+      const activeItem =
+        document.querySelector(
+          `.phase-item[data-phase="${phase}"]`
+        );
+
+      if (!activeItem) {
+        return;
+      }
+
+      const completed =
+        activeItem.querySelector(
+          ".phase-progress-completed"
+        );
+
+      const marker =
+        activeItem.querySelector(
+          ".phase-progress-marker"
+        );
+
+      const label =
+        activeItem.querySelector(
+          ".phase-current-label"
+        );
+
+      /*
+        0や99では端に寄りすぎるため、
+        視認性のため3〜97％に制限
+      */
+      const markerPosition = Math.max(
+        3,
+        Math.min(97, safeProgress)
+      );
+
+      label.innerHTML =
+        `↑ ここで詰まり<br>` +
+        `<span class="phase-current-label-detail">` +
+        `フェーズ${phase}${progressLabel}` +
+        `</span>`;
 
       requestAnimationFrame(() => {
-        progressBar.style.width = `${progress}%`;
+        completed.style.width =
+          `${markerPosition}%`;
+
+        marker.style.left =
+          `${markerPosition}%`;
       });
 
-      phaseCard.style.display = phase ? "block" : "none";
+      /*
+        スマホでは現在フェーズが見える位置へ
+        横スクロールする
+      */
+      if (window.innerWidth <= 700) {
+        setTimeout(() => {
+          activeItem.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "center"
+          });
+        }, 150);
+      }
     }
 
+    /* ========================================
+       HTML安全化・リンク化
+    ======================================== */
+
     function escapeHtml(text) {
-      return text
+      return String(text)
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
 
     function linkify(text) {
@@ -680,7 +1122,8 @@
             ""
           );
 
-          const trailing = url.slice(cleanUrl.length);
+          const trailing =
+            url.slice(cleanUrl.length);
 
           return (
             `<a href="${cleanUrl}" ` +
@@ -692,82 +1135,143 @@
       );
     }
 
-    function formatAnswer(text) {
-      const escaped = escapeHtml(text);
+    /* ========================================
+       回答本文の改行整形
+    ======================================== */
 
-      const lines = escaped
-        .split(/\r?\n/)
-        .map((line) => line.trim());
+    function formatAnswer(rawText) {
+      const normalizedText =
+        String(rawText || "")
+          .replace(/\r\n/g, "\n")
+          .replace(/\r/g, "\n")
+          .replace(/\u2028/g, "\n")
+          .replace(/\u2029/g, "\n")
+          .replace(/\u0085/g, "\n");
 
-      const html = [];
-      let paragraphLines = [];
+      const originalLines =
+        normalizedText.split("\n");
 
-      function flushParagraph() {
-        if (!paragraphLines.length) {
-          return;
-        }
+      const cleanedLines = [];
 
-        html.push(
-          `<p>${linkify(paragraphLines.join("<br>"))}</p>`
-        );
+      originalLines.forEach((originalLine) => {
+        const line = originalLine.trim();
 
-        paragraphLines = [];
-      }
-
-      lines.forEach((line) => {
+        /*
+          元の空行はいったん削除
+        */
         if (!line) {
-          flushParagraph();
           return;
         }
 
-        const bracketHeading = line.match(
-          /^【(.+?)】$/
-        );
-
-        const markdownHeading = line.match(
-          /^#{1,3}\s+(.+)$/
-        );
-
-        if (bracketHeading) {
-          flushParagraph();
-          html.push(
-            `<h2>【${bracketHeading[1]}】</h2>`
-          );
-          return;
+        /*
+          見出しの直前だけ空行を作る
+        */
+        if (/^【[^】]+】$/.test(line)) {
+          if (
+            cleanedLines.length > 0 &&
+            cleanedLines[
+              cleanedLines.length - 1
+            ] !== ""
+          ) {
+            cleanedLines.push("");
+          }
         }
 
-        if (markdownHeading) {
-          flushParagraph();
-          html.push(
-            `<h2>${markdownHeading[1]}</h2>`
-          );
-          return;
+        /*
+          末尾の誘導文前に空行を作る
+        */
+        if (
+          line.startsWith(
+            "多くの男性は努力していないのではなく"
+          )
+        ) {
+          if (
+            cleanedLines.length > 0 &&
+            cleanedLines[
+              cleanedLines.length - 1
+            ] !== ""
+          ) {
+            cleanedLines.push("");
+          }
         }
 
-        paragraphLines.push(line);
+        cleanedLines.push(line);
       });
 
-      flushParagraph();
+      while (
+        cleanedLines.length &&
+        cleanedLines[0] === ""
+      ) {
+        cleanedLines.shift();
+      }
 
-      return html.join("");
+      while (
+        cleanedLines.length &&
+        cleanedLines[
+          cleanedLines.length - 1
+        ] === ""
+      ) {
+        cleanedLines.pop();
+      }
+
+      const htmlParts = [];
+
+      cleanedLines.forEach((line) => {
+        if (line === "") {
+          htmlParts.push(
+            '<div class="answer-gap"></div>'
+          );
+          return;
+        }
+
+        const headingMatch =
+          line.match(/^【([^】]+)】$/);
+
+        if (headingMatch) {
+          htmlParts.push(
+            `<h2>【${escapeHtml(
+              headingMatch[1]
+            )}】</h2>`
+          );
+          return;
+        }
+
+        const escapedLine =
+          escapeHtml(line);
+
+        htmlParts.push(
+          `<p>${linkify(escapedLine)}</p>`
+        );
+      });
+
+      return htmlParts.join("");
     }
+
+    /* ========================================
+       エラー表示
+    ======================================== */
 
     function showError(message) {
       resultArea.classList.add("visible");
       phaseCard.style.display = "none";
 
       answerCard.innerHTML =
-        `<div class="error-message">${escapeHtml(message)}</div>`;
-
-      hero.classList.add("has-result");
+        `<div class="error-message">` +
+        `${escapeHtml(message)}` +
+        `</div>`;
     }
+
+    /* ========================================
+       診断送信
+    ======================================== */
 
     async function submitDiagnosis() {
       if (isSubmitting) {
         return;
       }
 
-      const userText = question.value.trim();
+      const userText =
+        question.value.trim();
 
       if (!userText) {
         question.focus();
@@ -775,22 +1279,42 @@
         return;
       }
 
-      setLoading(true);
-      resultArea.classList.remove("visible");
-      progressBar.style.width = "0%";
+      if (userText.length < 20) {
+        showError(
+          "診断には詳細な情報が必要です。相手との関係、具体的な出来事、自分が取った行動をもう少し詳しく書いてください。"
+        );
 
-      try {
-        const response = await fetch(API_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            message: userText
-          })
+        resultArea.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
         });
 
-        const data = await response.json();
+        return;
+      }
+
+      setLoading(true);
+
+      resultArea.classList.remove("visible");
+      phaseCard.style.display = "block";
+      answerCard.innerHTML = "";
+
+      try {
+        const response = await fetch(
+          API_URL,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+            body: JSON.stringify({
+              message: userText
+            })
+          }
+        );
+
+        const data =
+          await response.json();
 
         if (!response.ok) {
           throw new Error(
@@ -806,7 +1330,9 @@
         }
 
         const parsed =
-          extractMachineValues(data.answer);
+          extractMachineValues(
+            data.answer
+          );
 
         updatePhaseDisplay(
           parsed.phase,
@@ -814,10 +1340,13 @@
         );
 
         answerCard.innerHTML =
-          formatAnswer(parsed.cleanText);
+          formatAnswer(
+            parsed.cleanText
+          );
 
-        resultArea.classList.add("visible");
-        hero.classList.add("has-result");
+        resultArea.classList.add(
+          "visible"
+        );
 
         setTimeout(() => {
           resultArea.scrollIntoView({
@@ -825,35 +1354,60 @@
             block: "start"
           });
         }, 100);
+
       } catch (error) {
         console.error(error);
 
         showError(
           "診断中にエラーが発生しました。時間をおいて、もう一度お試しください。"
         );
+
       } finally {
         setLoading(false);
       }
     }
 
-    question.addEventListener("focus", expandSearch);
+    /* ========================================
+       イベント
+    ======================================== */
 
-    question.addEventListener("blur", collapseSearch);
+    question.addEventListener(
+      "focus",
+      expandSearch
+    );
 
-    question.addEventListener("input", () => {
-      expandSearch();
-      resizeTextarea();
-    });
+    question.addEventListener(
+      "blur",
+      collapseSearch
+    );
 
-    question.addEventListener("keydown", (event) => {
-      if (
-        event.key === "Enter" &&
-        (event.ctrlKey || event.metaKey)
-      ) {
-        event.preventDefault();
-        submitDiagnosis();
+    question.addEventListener(
+      "input",
+      () => {
+        expandSearch();
+        resizeTextarea();
       }
-    });
+    );
+
+    question.addEventListener(
+      "keydown",
+      (event) => {
+        /*
+          Ctrl＋Enter
+          MacはCommand＋Enter
+        */
+        if (
+          event.key === "Enter" &&
+          (
+            event.ctrlKey ||
+            event.metaKey
+          )
+        ) {
+          event.preventDefault();
+          submitDiagnosis();
+        }
+      }
+    );
 
     submitButton.addEventListener(
       "click",
