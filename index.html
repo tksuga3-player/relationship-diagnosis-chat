@@ -479,7 +479,7 @@
     }
 
     .answer-card h2 {
-      margin: 38px 0 4px;
+      margin: 28px 0 4px;
       color: #0b4f8a;
       font-size: 18px;
       line-height: 1.55;
@@ -494,7 +494,7 @@
     }
 
     .answer-card .answer-gap {
-      height: 28px;
+      height: 15px;
     }
 
     .answer-card a {
@@ -1154,7 +1154,7 @@
       const cleanedLines = [];
 
       originalLines.forEach((originalLine) => {
-        const line = originalLine.trim();
+        let line = originalLine.trim();
 
         /*
           元の空行はいったん削除
@@ -1178,28 +1178,33 @@
         }
 
         /*
-          末尾の誘導文前に空行を作る
+          CTA開始タグを検出し、
+          CTAブロックの直前に空行を作る。
+          タグ自体は画面に表示しない。
         */
-        /*
-  CTA本文の前にだけ空行を入れる
-*/
-/*
-  CTA開始タグを検出し、
-  CTAブロックの直前に空白を入れる。
-  タグ自体は画面に表示しない。
-*/
-if (line === "[[CTA_START]]") {
-  if (
-    cleanedLines.length > 0 &&
-    cleanedLines[
-      cleanedLines.length - 1
-    ] !== ""
-  ) {
-    cleanedLines.push("");
-  }
+        if (
+          /\[\[\s*CTA_START\s*\]\]/i.test(line)
+        ) {
+          if (
+            cleanedLines.length > 0 &&
+            cleanedLines[
+              cleanedLines.length - 1
+            ] !== ""
+          ) {
+            cleanedLines.push("");
+          }
 
-  return;
-}
+          line = line
+            .replace(
+              /\[\[\s*CTA_START\s*\]\]/gi,
+              ""
+            )
+            .trim();
+
+          if (!line) {
+            return;
+          }
+        }
 
         cleanedLines.push(line);
       });
