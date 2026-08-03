@@ -1180,20 +1180,22 @@
         /*
           末尾の誘導文前に空行を作る
         */
-        if (
-          line.startsWith(
-            "多くの男性は努力していないのではなく"
-          )
-        ) {
-          if (
-            cleanedLines.length > 0 &&
-            cleanedLines[
-              cleanedLines.length - 1
-            ] !== ""
-          ) {
-            cleanedLines.push("");
-          }
-        }
+        /*
+  CTA部分の前に空行を入れる
+*/
+if (
+  line.startsWith("多くの男性は") ||
+  line.startsWith("▼まずは")
+) {
+  if (
+    cleanedLines.length > 0 &&
+    cleanedLines[
+      cleanedLines.length - 1
+    ] !== ""
+  ) {
+    cleanedLines.push("");
+  }
+}
 
         cleanedLines.push(line);
       });
