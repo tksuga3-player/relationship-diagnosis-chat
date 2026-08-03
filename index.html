@@ -2,158 +2,863 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>恋愛の4フェーズ診断</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
-      background: #f5f5f5;
-      color: #222;
+      background: #ffffff;
+      color: #202124;
       font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
+        Arial,
         "Hiragino Kaku Gothic ProN",
         "Yu Gothic",
+        Meiryo,
         sans-serif;
     }
 
-    .container {
-      width: min(720px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 48px 0 80px;
-    }
-
-    h1 {
-      margin: 0 0 16px;
-      font-size: 32px;
-      line-height: 1.4;
-    }
-
-    .lead {
-      margin-bottom: 32px;
-      line-height: 1.8;
-      color: #555;
-    }
-
+    button,
     textarea {
-      box-sizing: border-box;
+      font-family: inherit;
+    }
+
+    .page {
+      width: min(920px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 12vh 0 80px;
+    }
+
+    .hero {
+      text-align: center;
+      transition: padding 0.3s ease;
+    }
+
+    .hero.has-result {
+      padding-top: 0;
+    }
+
+    .title {
+      margin: 0;
+      font-size: clamp(30px, 5vw, 46px);
+      line-height: 1.35;
+      letter-spacing: 0.02em;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      margin: 16px 0 32px;
+      color: #5f6368;
+      font-size: 15px;
+      line-height: 1.8;
+    }
+
+    .search-shell {
+      position: relative;
+      width: min(100%, 760px);
+      margin: 0 auto;
+      background: #ffffff;
+      border: 1px solid #dfe1e5;
+      border-radius: 28px;
+      box-shadow:
+        0 1px 6px rgba(32, 33, 36, 0.2);
+      transition:
+        border-radius 0.25s ease,
+        box-shadow 0.25s ease;
+    }
+
+    .search-shell:hover,
+    .search-shell:focus-within {
+      box-shadow:
+        0 1px 8px rgba(32, 33, 36, 0.28);
+    }
+
+    .search-shell.expanded {
+      border-radius: 22px;
+    }
+
+    .search-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 8px 8px 20px;
+    }
+
+    .search-icon {
+      flex: 0 0 auto;
+      margin-top: 10px;
+      color: #5f6368;
+      font-size: 21px;
+      line-height: 1;
+    }
+
+    #question {
+      display: block;
+      flex: 1;
       width: 100%;
-      min-height: 220px;
-      padding: 18px;
-      border: 1px solid #bbb;
-      border-radius: 10px;
-      background: #fff;
-      font: inherit;
+      height: 42px;
+      min-height: 42px;
+      max-height: 320px;
+      padding: 10px 4px 8px;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: #202124;
       font-size: 16px;
       line-height: 1.7;
-      resize: vertical;
+      resize: none;
+      overflow-y: hidden;
+      transition:
+        height 0.25s ease,
+        min-height 0.25s ease;
     }
 
-    button {
-      width: 100%;
-      margin-top: 16px;
-      padding: 16px;
+    #question::placeholder {
+      color: #9aa0a6;
+      opacity: 1;
+    }
+
+    .search-shell.expanded #question {
+      min-height: 150px;
+    }
+
+    .submit-button {
+      flex: 0 0 auto;
+      width: 44px;
+      height: 44px;
+      padding: 0;
       border: 0;
-      border-radius: 10px;
-      background: #222;
-      color: #fff;
+      border-radius: 50%;
+      background: #202124;
+      color: #ffffff;
+      font-size: 20px;
+      cursor: pointer;
+      transition:
+        opacity 0.2s ease,
+        transform 0.2s ease,
+        background 0.2s ease;
+    }
+
+    .submit-button:hover {
+      background: #000000;
+      transform: scale(1.03);
+    }
+
+    .submit-button:disabled {
+      cursor: default;
+      opacity: 0.45;
+      transform: none;
+    }
+
+    .submit-label {
+      margin-top: 14px;
+      color: #80868b;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .loading {
+      display: none;
+      margin: 42px auto 0;
+      text-align: center;
+    }
+
+    .loading.visible {
+      display: block;
+    }
+
+    .loading-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .loading-dots span {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #5f6368;
+      animation: pulse 1.2s infinite ease-in-out;
+    }
+
+    .loading-dots span:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+
+    .loading-dots span:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    .loading-text {
+      color: #5f6368;
+      font-size: 14px;
+    }
+
+    @keyframes pulse {
+      0%,
+      80%,
+      100% {
+        opacity: 0.3;
+        transform: scale(0.8);
+      }
+
+      40% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .result-area {
+      display: none;
+      width: min(100%, 820px);
+      margin: 44px auto 0;
+    }
+
+    .result-area.visible {
+      display: block;
+    }
+
+    .phase-card {
+      padding: 26px;
+      border: 1px solid #e0e0e0;
+      border-radius: 20px;
+      background: #ffffff;
+      box-shadow:
+        0 2px 12px rgba(60, 64, 67, 0.08);
+    }
+
+    .phase-title {
+      margin: 0 0 22px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .phase-flow {
+      display: grid;
+      grid-template-columns:
+        minmax(0, 1fr)
+        24px
+        minmax(0, 1fr)
+        24px
+        minmax(0, 1fr)
+        24px
+        minmax(0, 1fr);
+      align-items: center;
+      gap: 4px;
+    }
+
+    .phase-item {
+      position: relative;
+      min-height: 94px;
+      padding: 14px 9px;
+      border: 1px solid #dadce0;
+      border-radius: 13px;
+      background: #f8f9fa;
+      text-align: center;
+    }
+
+    .phase-item.active {
+      border: 2px solid #202124;
+      background: #ffffff;
+      box-shadow:
+        0 2px 8px rgba(32, 33, 36, 0.14);
+    }
+
+    .phase-item.passed {
+      background: #f1f3f4;
+    }
+
+    .phase-number {
+      margin-bottom: 7px;
+      font-size: 12px;
+      color: #5f6368;
+      font-weight: 700;
+    }
+
+    .phase-name {
+      font-size: 14px;
+      line-height: 1.45;
+      font-weight: 700;
+    }
+
+    .phase-status {
+      display: none;
+      position: absolute;
+      left: 50%;
+      bottom: -28px;
+      width: max-content;
+      transform: translateX(-50%);
+      color: #202124;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .phase-item.active .phase-status {
+      display: block;
+    }
+
+    .phase-arrow {
+      color: #9aa0a6;
+      text-align: center;
+      font-size: 20px;
+    }
+
+    .progress-section {
+      margin-top: 46px;
+    }
+
+    .progress-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 9px;
+    }
+
+    .progress-label {
+      color: #5f6368;
+      font-size: 13px;
+    }
+
+    .progress-value {
       font-size: 17px;
       font-weight: 700;
-      cursor: pointer;
     }
 
-    .result {
-      display: none;
-      margin-top: 32px;
-      padding: 24px;
-      border-radius: 10px;
-      background: #fff;
+    .progress-track {
+      width: 100%;
+      height: 11px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e8eaed;
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: #202124;
+      transition: width 0.7s ease;
+    }
+
+    .answer-card {
+      margin-top: 20px;
+      padding: 30px;
+      border: 1px solid #e0e0e0;
+      border-radius: 20px;
+      background: #ffffff;
+      box-shadow:
+        0 2px 12px rgba(60, 64, 67, 0.08);
+      text-align: left;
+      font-size: 16px;
+      line-height: 1.9;
+      overflow-wrap: anywhere;
+    }
+
+    .answer-card h2 {
+      margin: 30px 0 6px;
+      font-size: 19px;
+      line-height: 1.55;
+    }
+
+    .answer-card h2:first-child {
+      margin-top: 0;
+    }
+
+    .answer-card p {
+      margin: 0 0 9px;
+    }
+
+    .answer-card a {
+      color: #1a73e8;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .answer-card a:hover {
+      text-decoration-thickness: 2px;
+    }
+
+    .error-message {
+      padding: 22px;
+      border: 1px solid #dadce0;
+      border-radius: 16px;
+      background: #ffffff;
+      color: #5f6368;
       line-height: 1.8;
-      white-space: pre-wrap;
+      text-align: center;
+    }
+
+    @media (max-width: 700px) {
+      .page {
+        width: min(100% - 20px, 920px);
+        padding-top: 8vh;
+      }
+
+      .subtitle {
+        margin-bottom: 24px;
+      }
+
+      .search-row {
+        padding-left: 14px;
+      }
+
+      .phase-card {
+        padding: 20px 14px;
+      }
+
+      .phase-flow {
+        display: flex;
+        align-items: stretch;
+        overflow-x: auto;
+        gap: 7px;
+        padding: 0 2px 34px;
+      }
+
+      .phase-item {
+        flex: 0 0 125px;
+      }
+
+      .phase-arrow {
+        display: flex;
+        align-items: center;
+        flex: 0 0 auto;
+      }
+
+      .answer-card {
+        padding: 22px 18px;
+      }
     }
   </style>
 </head>
 
 <body>
-  <main class="container">
-    <h1>恋愛の4フェーズ診断</h1>
+  <main class="page">
+    <section id="hero" class="hero">
+      <h1 class="title">恋愛の4フェーズ診断</h1>
 
-    <p class="lead">
-      うまくいかなかった状況を、できるだけ具体的に書いてください。<br>
-      現在のフェーズと、詰まっている原因を構造的に診断します。
-    </p>
+      <p class="subtitle">
+        うまくいかなかった状況を書くと、<br>
+        現在地とボトルネックを構造的に診断します。
+      </p>
 
-    <textarea
-      id="question"
-      placeholder="例：2回目のデートまでは行けましたが、関係を進めようとすると断られました。何が原因でしょうか。"
-    ></textarea>
+      <div id="searchShell" class="search-shell">
+        <div class="search-row">
+          <div class="search-icon" aria-hidden="true">⌕</div>
 
-    <button id="submitButton" type="button">
-      診断する
-    </button>
+          <textarea
+            id="question"
+            aria-label="相談内容"
+            placeholder="例：2回目のデートまでは行けましたが、関係を進めようとすると断られました。会話は盛り上がっていたと思います。"
+          ></textarea>
 
-    <section id="result" class="result"></section>
+          <button
+            id="submitButton"
+            class="submit-button"
+            type="button"
+            aria-label="診断する"
+            title="診断する"
+          >
+            ↑
+          </button>
+        </div>
+      </div>
+
+      <div class="submit-label">
+        状況・相手の反応・自分が取った行動を書くと、判定精度が上がります
+      </div>
+    </section>
+
+    <section id="loading" class="loading">
+      <div class="loading-dots">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <div class="loading-text">
+        4つのフェーズから現在地を判定しています
+      </div>
+    </section>
+
+    <section id="resultArea" class="result-area">
+      <div id="phaseCard" class="phase-card">
+        <h2 class="phase-title">現在地</h2>
+
+        <div class="phase-flow">
+          <div class="phase-item" data-phase="1">
+            <div class="phase-number">PHASE 1</div>
+            <div class="phase-name">拒絶ライン</div>
+            <div class="phase-status">▲ ここで詰まり</div>
+          </div>
+
+          <div class="phase-arrow">→</div>
+
+          <div class="phase-item" data-phase="2">
+            <div class="phase-number">PHASE 2</div>
+            <div class="phase-name">安全ライン</div>
+            <div class="phase-status">▲ ここで詰まり</div>
+          </div>
+
+          <div class="phase-arrow">→</div>
+
+          <div class="phase-item" data-phase="3">
+            <div class="phase-number">PHASE 3</div>
+            <div class="phase-name">男としての<br>候補ライン</div>
+            <div class="phase-status">▲ ここで詰まり</div>
+          </div>
+
+          <div class="phase-arrow">→</div>
+
+          <div class="phase-item" data-phase="4">
+            <div class="phase-number">PHASE 4</div>
+            <div class="phase-name">長期伴侶<br>ライン</div>
+            <div class="phase-status">▲ ここで詰まり</div>
+          </div>
+        </div>
+
+        <div class="progress-section">
+          <div class="progress-heading">
+            <span class="progress-label">このフェーズ内での進捗</span>
+            <span id="progressValue" class="progress-value">0%</span>
+          </div>
+
+          <div class="progress-track">
+            <div id="progressBar" class="progress-bar"></div>
+          </div>
+        </div>
+      </div>
+
+      <article id="answerCard" class="answer-card"></article>
+    </section>
   </main>
 
   <script>
-  const submitButton = document.getElementById("submitButton");
-  const question = document.getElementById("question");
-  const result = document.getElementById("result");
+    const API_URL =
+      "https://relationship-diagnosis-api.tk-suga3.workers.dev/";
 
-  const API_URL =
-    "https://relationship-diagnosis-api.tk-suga3.workers.dev/";
+    const hero = document.getElementById("hero");
+    const searchShell = document.getElementById("searchShell");
+    const question = document.getElementById("question");
+    const submitButton = document.getElementById("submitButton");
 
-  submitButton.addEventListener("click", async () => {
-    const text = question.value.trim();
+    const loading = document.getElementById("loading");
+    const resultArea = document.getElementById("resultArea");
+    const phaseCard = document.getElementById("phaseCard");
+    const answerCard = document.getElementById("answerCard");
 
-    if (!text) {
-      alert("相談内容を入力してください。");
-      return;
+    const progressValue = document.getElementById("progressValue");
+    const progressBar = document.getElementById("progressBar");
+
+    let isSubmitting = false;
+
+    function expandSearch() {
+      searchShell.classList.add("expanded");
+      resizeTextarea();
     }
 
-    submitButton.disabled = true;
-    submitButton.textContent = "診断中です…";
+    function collapseSearch() {
+      if (!question.value.trim()) {
+        searchShell.classList.remove("expanded");
+        question.style.height = "42px";
+      }
+    }
 
-    result.style.display = "block";
-    result.textContent = "診断しています。しばらくお待ちください。";
+    function resizeTextarea() {
+      question.style.height = "auto";
 
-    try {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: text,
-        }),
+      const minimumHeight =
+        searchShell.classList.contains("expanded") ? 150 : 42;
+
+      const nextHeight = Math.max(
+        minimumHeight,
+        Math.min(question.scrollHeight, 320)
+      );
+
+      question.style.height = `${nextHeight}px`;
+      question.style.overflowY =
+        question.scrollHeight > 320 ? "auto" : "hidden";
+    }
+
+    function setLoading(active) {
+      isSubmitting = active;
+      submitButton.disabled = active;
+      submitButton.textContent = active ? "…" : "↑";
+      loading.classList.toggle("visible", active);
+    }
+
+    function extractMachineValues(rawText) {
+      const phaseMatch = rawText.match(
+        /\[\[\s*CURRENT_PHASE\s*:\s*([1-4])\s*\]\]/i
+      );
+
+      const progressMatch = rawText.match(
+        /\[\[\s*PHASE_PROGRESS\s*:\s*(\d{1,3})\s*\]\]/i
+      );
+
+      const phase = phaseMatch
+        ? Number(phaseMatch[1])
+        : null;
+
+      const progress = progressMatch
+        ? Math.max(0, Math.min(99, Number(progressMatch[1])))
+        : 0;
+
+      const cleanText = rawText
+        .replace(
+          /\[\[\s*CURRENT_PHASE\s*:\s*[1-4]\s*\]\]/gi,
+          ""
+        )
+        .replace(
+          /\[\[\s*PHASE_PROGRESS\s*:\s*\d{1,3}\s*\]\]/gi,
+          ""
+        )
+        .replace(/^\s+/, "")
+        .trim();
+
+      return {
+        phase,
+        progress,
+        cleanText
+      };
+    }
+
+    function updatePhaseDisplay(phase, progress) {
+      const phaseItems =
+        document.querySelectorAll(".phase-item");
+
+      phaseItems.forEach((item) => {
+        const itemPhase = Number(item.dataset.phase);
+
+        item.classList.remove("active", "passed");
+
+        if (phase && itemPhase < phase) {
+          item.classList.add("passed");
+        }
+
+        if (itemPhase === phase) {
+          item.classList.add("active");
+        }
       });
 
-      const data = await response.json();
+      progressValue.textContent = `${progress}%`;
 
-      if (!response.ok) {
-        throw new Error(
-          data.error || "診断結果の取得に失敗しました。"
-        );
-      }
+      requestAnimationFrame(() => {
+        progressBar.style.width = `${progress}%`;
+      });
 
-      if (!data.answer) {
-        throw new Error("診断結果が空でした。");
-      }
-
-      result.textContent = data.answer;
-    } catch (error) {
-      console.error(error);
-
-      result.textContent =
-        "診断中にエラーが発生しました。時間をおいて、もう一度お試しください。";
-    } finally {
-      submitButton.disabled = false;
-      submitButton.textContent = "診断する";
+      phaseCard.style.display = phase ? "block" : "none";
     }
-  });
-</script>
+
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function linkify(text) {
+      return text.replace(
+        /(https?:\/\/[^\s<]+)/g,
+        (url) => {
+          const cleanUrl = url.replace(
+            /[。、，．）」』】]+$/,
+            ""
+          );
+
+          const trailing = url.slice(cleanUrl.length);
+
+          return (
+            `<a href="${cleanUrl}" ` +
+            `target="_blank" ` +
+            `rel="noopener noreferrer">` +
+            `${cleanUrl}</a>${trailing}`
+          );
+        }
+      );
+    }
+
+    function formatAnswer(text) {
+      const escaped = escapeHtml(text);
+
+      const lines = escaped
+        .split(/\r?\n/)
+        .map((line) => line.trim());
+
+      const html = [];
+      let paragraphLines = [];
+
+      function flushParagraph() {
+        if (!paragraphLines.length) {
+          return;
+        }
+
+        html.push(
+          `<p>${linkify(paragraphLines.join("<br>"))}</p>`
+        );
+
+        paragraphLines = [];
+      }
+
+      lines.forEach((line) => {
+        if (!line) {
+          flushParagraph();
+          return;
+        }
+
+        const bracketHeading = line.match(
+          /^【(.+?)】$/
+        );
+
+        const markdownHeading = line.match(
+          /^#{1,3}\s+(.+)$/
+        );
+
+        if (bracketHeading) {
+          flushParagraph();
+          html.push(
+            `<h2>【${bracketHeading[1]}】</h2>`
+          );
+          return;
+        }
+
+        if (markdownHeading) {
+          flushParagraph();
+          html.push(
+            `<h2>${markdownHeading[1]}</h2>`
+          );
+          return;
+        }
+
+        paragraphLines.push(line);
+      });
+
+      flushParagraph();
+
+      return html.join("");
+    }
+
+    function showError(message) {
+      resultArea.classList.add("visible");
+      phaseCard.style.display = "none";
+
+      answerCard.innerHTML =
+        `<div class="error-message">${escapeHtml(message)}</div>`;
+
+      hero.classList.add("has-result");
+    }
+
+    async function submitDiagnosis() {
+      if (isSubmitting) {
+        return;
+      }
+
+      const userText = question.value.trim();
+
+      if (!userText) {
+        question.focus();
+        expandSearch();
+        return;
+      }
+
+      setLoading(true);
+      resultArea.classList.remove("visible");
+      progressBar.style.width = "0%";
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            message: userText
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.error ||
+            "診断結果の取得に失敗しました。"
+          );
+        }
+
+        if (!data.answer) {
+          throw new Error(
+            "診断結果が空でした。"
+          );
+        }
+
+        const parsed =
+          extractMachineValues(data.answer);
+
+        updatePhaseDisplay(
+          parsed.phase,
+          parsed.progress
+        );
+
+        answerCard.innerHTML =
+          formatAnswer(parsed.cleanText);
+
+        resultArea.classList.add("visible");
+        hero.classList.add("has-result");
+
+        setTimeout(() => {
+          resultArea.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+          });
+        }, 100);
+      } catch (error) {
+        console.error(error);
+
+        showError(
+          "診断中にエラーが発生しました。時間をおいて、もう一度お試しください。"
+        );
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    question.addEventListener("focus", expandSearch);
+
+    question.addEventListener("blur", collapseSearch);
+
+    question.addEventListener("input", () => {
+      expandSearch();
+      resizeTextarea();
+    });
+
+    question.addEventListener("keydown", (event) => {
+      if (
+        event.key === "Enter" &&
+        (event.ctrlKey || event.metaKey)
+      ) {
+        event.preventDefault();
+        submitDiagnosis();
+      }
+    });
+
+    submitButton.addEventListener(
+      "click",
+      submitDiagnosis
+    );
+  </script>
 </body>
 </html>
