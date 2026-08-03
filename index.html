@@ -479,7 +479,7 @@
     }
 
     .answer-card h2 {
-      margin: 28px 0 4px;
+      margin: 38px 0 4px;
       color: #0b4f8a;
       font-size: 18px;
       line-height: 1.55;
@@ -1181,11 +1181,10 @@
           末尾の誘導文前に空行を作る
         */
         /*
-  CTA部分の前に空行を入れる
+  CTA本文の前にだけ空行を入れる
 */
 if (
-  line.startsWith("多くの男性は") ||
-  line.startsWith("▼まずは")
+  line.startsWith("多くの男性は")
 ) {
   if (
     cleanedLines.length > 0 &&
