@@ -1140,123 +1140,141 @@
     ======================================== */
 
     function formatAnswer(rawText) {
-      const normalizedText =
-        String(rawText || "")
-          .replace(/\r\n/g, "\n")
-          .replace(/\r/g, "\n")
-          .replace(/\u2028/g, "\n")
-          .replace(/\u2029/g, "\n")
-          .replace(/\u0085/g, "\n");
+  const normalizedText =
+    String(rawText || "")
+      .replace(/\r\n/g, "\n")
+      .replace(/\r/g, "\n")
+      .replace(/\u2028/g, "\n")
+      .replace(/\u2029/g, "\n")
+      .replace(/\u0085/g, "\n");
 
-      const originalLines =
-        normalizedText.split("\n");
+  const originalLines =
+    normalizedText.split("\n");
 
-      const cleanedLines = [];
+  const cleanedLines = [];
 
-      originalLines.forEach((originalLine) => {
-        let line = originalLine.trim();
+  originalLines.forEach((originalLine) => {
+    const line = originalLine
+      .replace(
+        /\[\[\s*CTA_START\s*\]\]/gi,
+        ""
+      )
+      .trim();
 
-        /*
-          元の空行はいったん削除
-        */
-        if (!line) {
-          return;
-        }
+    if (!line) {
+      return;
+    }
 
-        /*
-          見出しの直前だけ空行を作る
-        */
-        if (/^【[^】]+】$/.test(line)) {
-          if (
-            cleanedLines.length > 0 &&
-            cleanedLines[
-              cleanedLines.length - 1
-            ] !== ""
-          ) {
-            cleanedLines.push("");
-          }
-        }
-
-        /*
-          CTA開始タグを検出し、
-          CTAブロックの直前に空行を作る。
-          タグ自体は画面に表示しない。
-        */
-        if (
-          /\[\[\s*CTA_START\s*\]\]/i.test(line)
-        ) {
-          if (
-            cleanedLines.length > 0 &&
-            cleanedLines[
-              cleanedLines.length - 1
-            ] !== ""
-          ) {
-            cleanedLines.push("");
-          }
-
-          line = line
-            .replace(
-              /\[\[\s*CTA_START\s*\]\]/gi,
-              ""
-            )
-            .trim();
-
-          if (!line) {
-            return;
-          }
-        }
-
-        cleanedLines.push(line);
-      });
-
-      while (
-        cleanedLines.length &&
-        cleanedLines[0] === ""
-      ) {
-        cleanedLines.shift();
-      }
-
-      while (
-        cleanedLines.length &&
+    /*
+      見出しの直前に空白を入れる
+    */
+    if (/^【[^】]+】$/.test(line)) {
+      if (
+        cleanedLines.length > 0 &&
         cleanedLines[
           cleanedLines.length - 1
-        ] === ""
+        ] !== ""
       ) {
-        cleanedLines.pop();
+        cleanedLines.push("");
       }
-
-      const htmlParts = [];
-
-      cleanedLines.forEach((line) => {
-        if (line === "") {
-          htmlParts.push(
-            '<div class="answer-gap"></div>'
-          );
-          return;
-        }
-
-        const headingMatch =
-          line.match(/^【([^】]+)】$/);
-
-        if (headingMatch) {
-          htmlParts.push(
-            `<h2>【${escapeHtml(
-              headingMatch[1]
-            )}】</h2>`
-          );
-          return;
-        }
-
-        const escapedLine =
-          escapeHtml(line);
-
-        htmlParts.push(
-          `<p>${linkify(escapedLine)}</p>`
-        );
-      });
-
-      return htmlParts.join("");
     }
+
+    cleanedLines.push(line);
+  });
+
+  /*
+    最後のURLをCTAの末尾と判定する。
+    URLの前にある2行をCTAブロックとして、
+    その直前に空白を入れる。
+
+    例：
+    CTA説明文
+    ▼CTA見出し
+    URL
+  */
+  let lastUrlIndex = -1;
+
+  for (
+    let index = cleanedLines.length - 1;
+    index >= 0;
+    index--
+  ) {
+    if (
+      /^https?:\/\/\S+$/i.test(
+        cleanedLines[index]
+      )
+    ) {
+      lastUrlIndex = index;
+      break;
+    }
+  }
+
+  if (lastUrlIndex >= 1) {
+    const ctaStartIndex =
+      Math.max(0, lastUrlIndex - 2);
+
+    if (
+      ctaStartIndex > 0 &&
+      cleanedLines[
+        ctaStartIndex - 1
+      ] !== ""
+    ) {
+      cleanedLines.splice(
+        ctaStartIndex,
+        0,
+        ""
+      );
+    }
+  }
+
+  while (
+    cleanedLines.length &&
+    cleanedLines[0] === ""
+  ) {
+    cleanedLines.shift();
+  }
+
+  while (
+    cleanedLines.length &&
+    cleanedLines[
+      cleanedLines.length - 1
+    ] === ""
+  ) {
+    cleanedLines.pop();
+  }
+
+  const htmlParts = [];
+
+  cleanedLines.forEach((line) => {
+    if (line === "") {
+      htmlParts.push(
+        '<div class="answer-gap"></div>'
+      );
+      return;
+    }
+
+    const headingMatch =
+      line.match(/^【([^】]+)】$/);
+
+    if (headingMatch) {
+      htmlParts.push(
+        `<h2>【${escapeHtml(
+          headingMatch[1]
+        )}】</h2>`
+      );
+      return;
+    }
+
+    const escapedLine =
+      escapeHtml(line);
+
+    htmlParts.push(
+      `<p>${linkify(escapedLine)}</p>`
+    );
+  });
+
+  return htmlParts.join("");
+}
 
     /* ========================================
        エラー表示
