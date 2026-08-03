@@ -1183,9 +1183,12 @@
         /*
   CTA本文の前にだけ空行を入れる
 */
-if (
-  line.startsWith("多くの男性は")
-) {
+/*
+  CTA開始タグを検出し、
+  CTAブロックの直前に空白を入れる。
+  タグ自体は画面に表示しない。
+*/
+if (line === "[[CTA_START]]") {
   if (
     cleanedLines.length > 0 &&
     cleanedLines[
@@ -1194,6 +1197,8 @@ if (
   ) {
     cleanedLines.push("");
   }
+
+  return;
 }
 
         cleanedLines.push(line);
