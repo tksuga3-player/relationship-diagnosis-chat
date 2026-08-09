@@ -10,7 +10,7 @@
 
   <meta name="robots" content="index, follow">
 
-  <title>恋愛の4フェーズ診断</title>
+  <title>恋愛がなぜ進まないか診断</title>
 
   <style>
     * {
@@ -577,11 +577,11 @@
   <main class="page">
 
     <section class="hero">
-      <h1 class="title">恋愛の4フェーズ診断</h1>
+      <h1 class="title">恋愛がなぜ進まないか診断</h1>
 
       <p class="subtitle">
         うまくいかなかった状況を書くと、<br>
-        現在地とボトルネックを構造的に診断します。
+        なぜそこで止まったのかと、次に変えるポイントがわかります。
       </p>
 
       <div id="searchShell" class="search-shell">
@@ -661,7 +661,7 @@
 
       <section id="phaseCard" class="phase-card">
         <h2 class="phase-title">
-          恋愛4フェーズ上の現在地
+          恋愛4フェーズ｜今いちばん引っかかっている場所
         </h2>
 
         <div class="phase-flow">
@@ -1175,6 +1175,22 @@
           cleanedLines.length - 1
         ] !== ""
       ) {
+        cleanedLines.push("");
+      }
+    }
+
+    /*
+      CTA（▼で始まる行）の直前に、
+      約2行分の空きを入れる
+    */
+    if (/^▼/.test(line)) {
+      if (
+        cleanedLines.length > 0 &&
+        cleanedLines[
+          cleanedLines.length - 1
+        ] !== ""
+      ) {
+        cleanedLines.push("");
         cleanedLines.push("");
       }
     }
