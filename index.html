@@ -1389,6 +1389,105 @@
             parsed.cleanText
           );
 
+        // --------------------------------------
+// 診断結果をLINEへ引き継ぐ
+// --------------------------------------
+if (
+  Number.isInteger(parsed.phase) &&
+  parsed.phase >= 1 &&
+  parsed.phase <= 4
+) {
+  try {
+    const handoffResponse =
+      await fetch(
+        "https://relationship-line-link.tk-suga3.workers.dev/chat-handoff",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+          body: JSON.stringify({
+            phase: parsed.phase,
+            progress:
+              parsed.progress ?? 50
+          })
+        }
+      );
+
+    const handoffResult =
+      await handoffResponse.json();
+
+    if (
+      handoffResponse.ok &&
+      handoffResult.ok &&
+      handoffResult.handoffId
+    ) {
+      const lineUrl =
+        "https://liff.line.me/2011042458-cQx2iUb9/" +
+        "?handoffId=" +
+        encodeURIComponent(
+          handoffResult.handoffId
+        );
+
+      answerCard.insertAdjacentHTML(
+        "beforeend",
+        `
+          <div
+            style="
+              margin-top:32px;
+              padding-top:24px;
+              border-top:1px solid #ddd;
+              text-align:center;
+            "
+          >
+            <p
+              style="
+                margin:0 0 8px;
+                font-weight:700;
+              "
+            >
+              この診断結果をLINEに引き継ぐ
+            </p>
+
+            <p
+              style="
+                margin:0 0 16px;
+                font-size:14px;
+                line-height:1.7;
+              "
+            >
+              今のフェーズを引き継いだ状態で、
+              そのまま相談を続けられます。
+            </p>
+
+            <a
+              href="${lineUrl}"
+              style="
+                display:inline-block;
+                padding:13px 28px;
+                background:#111;
+                color:#fff;
+                text-decoration:none;
+                border-radius:6px;
+                font-weight:700;
+              "
+            >
+              LINEで相談を続ける
+            </a>
+          </div>
+        `
+      );
+    }
+
+  } catch (handoffError) {
+    console.error(
+      "LINE handoff creation failed:",
+      handoffError
+    );
+  }
+}
+        
         resultArea.classList.add(
           "visible"
         );
